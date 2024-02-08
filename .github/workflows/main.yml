@@ -1,0 +1,73 @@
+name: Build QEMU Windows Installer
+
+concurrency: 
+  group: ${{ ( github.event_name == 'push' && 'test' ) || 'release' }}
+  cancel-in-progress: true
+on:
+  workflow_dispatch:
+  push:
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    permissions: write-all
+    outputs:
+      timestamp: ${{ steps.get-timestamp.outputs.time }}
+      tag_name: ${{ steps.generate_env_vars.outputs.tag_name }}
+    steps:
+      - name: Get build timestamp
+        id: get-timestamp
+        run: |
+          echo "time=$(/bin/date -u "+%Y-%m-%d")" >> $GITHUB_OUTPUT
+      - name: Generate environmental variables
+        id: generate_env_vars
+        run: |
+          echo "tag_name=nixos-image-${{ ( github.event_name == 'push' && 'test' ) || steps.get-timestamp.outputs.time }}" >> $GITHUB_OUTPUT
+          echo "release_name=${{ ( github.event_name == 'push' && format('Test Build {0}', steps.get-timestamp.outputs.time) ) || format('Build {0}', steps.get-timestamp.outputs.time) }}" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v4
+      - name: Check for existing tag
+        id: check-tag
+        run: |
+          if gh release view "${{ steps.generate_env_vars.outputs.tag_name }}" -R ${{ github.repository }}; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Clear previous release
+        run: gh release delete ${{ steps.generate_env_vars.outputs.tag_name }} --yes --cleanup-tag -R ${{ github.repository }}
+        if: ${{ steps.check-tag.outputs.exists == 'true' }}
+      - name: Create new release
+        run: |
+          gh release create ${{ steps.generate_env_vars.outputs.tag_name }} --title "${{ steps.generate_env_vars.outputs.release_name }}" --generate-notes=false --draft=false --latest=false --prerelease=true
+
+  builds:
+    needs: release
+    name: Build
+    runs-on: windows-latest
+    permissions: write-all
+    steps:
+      - name: Build
+        run: |
+          function msys2 {C:\\msys64\\usr\\bin\\env MSYSTEM=MINGW64 /usr/bin/bash -lc $args[0]} 
+          msys2 @'
+          pacman -Syu --noconfirm && \
+          pacman -Su --noconfirm && \
+          pacman -S base-devel mingw-w64-x86_64-toolchain git python ninja --noconfirm && \
+          gcc --version && \
+          pacman -S mingw-w64-x86_64-glib2 mingw-w64-x86_64-pixman python-setuptools --noconfirm && \
+          pacman -S mingw-w64-x86_64-gtk3 mingw-w64-x86_64-SDL2 mingw-w64-x86_64-libslirp --noconfirm && \
+          git config --global http.version HTTP/1.1
+          git config --global http.postBuffer 157286400
+          git clone https://github.com/patchew-project/qemu.git && \
+          cd qemu && \
+          git fetch --tags https://github.com/patchew-project/qemu tags/patchew/20230220100815.1624266-1-bin.meng@windriver.com && \
+          git checkout tags/patchew/20230220100815.1624266-1-bin.meng@windriver.com && \
+          curl https://gitlab.com/qemu-project/qemu/-/commit/5cb993ff131fca2abef3ce074a20258fd6fce557.patch | git apply --ignore-whitespace --reject && \
+          ./configure --enable-sdl --enable-gtk --disable-werror && \
+          make && \
+          make install
+          '@
