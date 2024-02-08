@@ -2,7 +2,7 @@ name: Build QEMU Windows Installer
 
 concurrency: 
   group: ${{ ( github.event_name == 'push' && 'test' ) || 'release' }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 on:
   workflow_dispatch:
   push:
@@ -65,7 +65,10 @@ jobs:
           git clone https://github.com/physics-enthusiast/qemu.git && \
           cd qemu && \
           git checkout win9p-rebase && \
-          ./configure --enable-sdl --enable-gtk --disable-werror && \
+          mkdir build && \
+          cd build && \
+          ../configure --enable-sdl --enable-gtk --disable-werror --target-list=x86_64-softmmu && \
           make && \
+          make check && \
           make installer
           '@
