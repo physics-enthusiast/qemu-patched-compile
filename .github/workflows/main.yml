@@ -62,12 +62,10 @@ jobs:
           pacman -S mingw-w64-x86_64-gtk3 mingw-w64-x86_64-SDL2 mingw-w64-x86_64-libslirp --noconfirm && \
           git config --global http.version HTTP/1.1
           git config --global http.postBuffer 157286400
-          git clone https://github.com/patchew-project/qemu.git && \
+          https://github.com/physics-enthusiast/qemu.git && \
           cd qemu && \
-          git fetch --tags https://github.com/patchew-project/qemu tags/patchew/20230220100815.1624266-1-bin.meng@windriver.com && \
-          git checkout tags/patchew/20230220100815.1624266-1-bin.meng@windriver.com && \
-          curl https://gitlab.com/qemu-project/qemu/-/commit/5cb993ff131fca2abef3ce074a20258fd6fce557.patch | git apply --ignore-whitespace --reject && \
+          git checkout win9p-rebase && \
           ./configure --enable-sdl --enable-gtk --disable-werror && \
           make && \
-          make install
+          make installer
           '@
