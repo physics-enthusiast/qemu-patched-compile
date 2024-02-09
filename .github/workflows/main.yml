@@ -61,11 +61,11 @@ jobs:
           git config --global http.postBuffer 157286400
           git clone https://github.com/physics-enthusiast/qemu.git && \
           cd qemu && \
-          git checkout win9p-rebase && \
+          git checkout testing && \
           mkdir build && \
           cd build && \
           ../configure --enable-sdl --enable-gtk --disable-werror --target-list=x86_64-softmmu && \
-          make -j$(nproc) && \
-          make -j$(nproc) install && \
-          make -j$(nproc) installer
+          make -j && \
+          make -j install && \
+          make -j installer
           '@
