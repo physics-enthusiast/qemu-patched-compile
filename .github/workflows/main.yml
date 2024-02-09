@@ -60,7 +60,7 @@ jobs:
             git clone https://github.com/physics-enthusiast/qemu.git
             cd qemu
             git checkout testing
-            ./configure --enable-sdl --enable-gtk --disable-werror --target-list=x86_64-softmmu --disable-docs --enable-fdt=system --disable-user $QEMU_CONFIGURE_OPTS $EXTRA_CONFIGURE_OPTS
+            ./configure --enable-sdl --enable-gtk --disable-werror --target-list=x86_64-softmmu --disable-docs --enable-fdt=internal --disable-plugins --disable-user $QEMU_CONFIGURE_OPTS $EXTRA_CONFIGURE_OPTS
             make -j$(expr $(nproc) + 1)
             make -j installer
           
