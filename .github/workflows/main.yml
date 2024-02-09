@@ -64,5 +64,5 @@ jobs:
           git checkout testing && \
           ./configure --enable-sdl --enable-gtk --disable-werror --target-list=x86_64-softmmu && \
           make -j && \
-          MSYS2_ARG_CONV_EXCL=* make -j installer
+          make -j installer
           '@
