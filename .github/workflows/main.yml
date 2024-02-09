@@ -59,9 +59,11 @@ jobs:
             git config --global http.postBuffer 157286400
             git clone https://github.com/physics-enthusiast/qemu.git
             cd qemu
-            git checkout testing
-            ./configure --enable-sdl --enable-gtk --disable-werror --target-list=x86_64-softmmu --disable-docs --enable-fdt=internal --disable-plugins --disable-user $QEMU_CONFIGURE_OPTS $EXTRA_CONFIGURE_OPTS
+            git checkout win9p-rebase
+            mkdir build
+            cd build
+            ../configure --enable-sdl --enable-gtk --disable-werror --target-list=x86_64-softmmu --disable-docs --enable-fdt=internal --disable-plugins --disable-user $QEMU_CONFIGURE_OPTS $EXTRA_CONFIGURE_OPTS
             make -j$(expr $(nproc) + 1)
-            make -j installer
+            make -j$(expr $(nproc) + 1) installer
             ls
           
