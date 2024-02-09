@@ -62,10 +62,7 @@ jobs:
           git clone https://github.com/physics-enthusiast/qemu.git && \
           cd qemu && \
           git checkout testing && \
-          mkdir build && \
-          cd build && \
-          ls && \
-          ../configure --enable-sdl --enable-gtk --disable-werror --target-list=x86_64-softmmu && \
+          ./configure --enable-sdl --enable-gtk --disable-werror --target-list=x86_64-softmmu && \
           make -j && \
           make -j install && \
           make -j installer
