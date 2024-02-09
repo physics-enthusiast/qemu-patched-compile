@@ -49,7 +49,7 @@ jobs:
     steps:
       - name: Build
         run: |
-          function msys2 {C:\msys64\mingw64.exe /bin/env MSYSTEM=MINGW64 MSYS=winsymlinks:native CHERE_INVOKING=yes /usr/bin/bash -lc $args[0]} 
+          function msys2 {C:\\msys64\\usr\\bin\\env MSYSTEM=MINGW64 MSYS=winsymlinks:native CHERE_INVOKING=yes /usr/bin/bash -lc $args[0]} 
           msys2 @'
           pacman -Syu --noconfirm && \
           pacman -Su --noconfirm && \
