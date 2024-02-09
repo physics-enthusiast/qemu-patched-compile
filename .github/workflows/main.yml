@@ -49,6 +49,13 @@ jobs:
     steps:
       - name: Build
         run: |
-          docker build https://github.com/physics-enthusiast/qemu.git#win9p-rebase --file ./tests/docker/dockerfiles/fedora-win64-cross.docker --tag=cross-compile
-          docker run --name=cross-compile --entrypoint /bin/sh ls
+          docker build https://github.com/physics-enthusiast/qemu.git#win9p-rebase --file ./tests/docker/dockerfiles/fedora-win64-cross.docker --tag=cross-compile:latest
+      - uses: addnab/docker-run-action@v3
+        with:
+          image: cross-compile:latest
+          shell: bash
+          run: |
+            echo "first line"
+            echo "second line"
+            ls
           
