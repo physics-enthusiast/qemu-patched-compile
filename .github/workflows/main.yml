@@ -65,7 +65,7 @@ jobs:
           mkdir build && \
           cd build && \
           ../configure --enable-sdl --enable-gtk --disable-werror --target-list=x86_64-softmmu && \
-          make && \
-          make install && \
-          make installer
+          make -j$(nproc) && \
+          make -j$(nproc) install && \
+          make -j$(nproc) installer
           '@
