@@ -64,6 +64,7 @@ jobs:
           git checkout testing && \
           mkdir build && \
           cd build && \
+          ls && \
           ../configure --enable-sdl --enable-gtk --disable-werror --target-list=x86_64-softmmu && \
           make -j && \
           make -j install && \
