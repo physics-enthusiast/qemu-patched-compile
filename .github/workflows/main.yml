@@ -10,7 +10,7 @@ on:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   qemu_repo: physics-enthusiast/qemu
-  branch: win9p-source
+  branch: win9p-rebase
 
 jobs:
   release:
