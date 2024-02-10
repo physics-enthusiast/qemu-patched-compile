@@ -6,6 +6,8 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  qemu_repo: physics-enthusiast/qemu
+  branch: win9p-rebase
 
 jobs:
   release:
@@ -13,18 +15,18 @@ jobs:
     runs-on: ubuntu-latest
     permissions: write-all
     outputs:
-      timestamp: ${{ steps.get-timestamp.outputs.time }}
+      version: ${{ steps.get-version.outputs.ver }}
       tag_name: ${{ steps.generate_env_vars.outputs.tag_name }}
     steps:
-      - name: Get build timestamp
-        id: get-timestamp
+      - name: Get version
+        id: get-version
         run: |
-          echo "time=$(/bin/date -u "+%Y-%m-%d")" >> $GITHUB_OUTPUT
+          echo "ver=$(curl https://raw.githubusercontent.com/${{ env.qemu_repo }}/${{ env.branch }}/VERSION)" >> $GITHUB_OUTPUT
       - name: Generate environmental variables
         id: generate_env_vars
         run: |
-          echo "tag_name=nixos-image-${{ ( github.event_name == 'push' && 'test' ) || steps.get-timestamp.outputs.time }}" >> $GITHUB_OUTPUT
-          echo "release_name=${{ ( github.event_name == 'push' && format('Test Build {0}', steps.get-timestamp.outputs.time) ) || format('Build {0}', steps.get-timestamp.outputs.time) }}" >> $GITHUB_OUTPUT
+          echo "tag_name=qemu-${{ ( github.event_name == 'push' && 'test' ) || steps.get-version.outputs.ver }}" >> $GITHUB_OUTPUT
+          echo "release_name=${{ ( github.event_name == 'push' && format('Test Build {0}', steps.get-version.outputs.ver) ) || format('Build {0}', steps.get-version.outputs.ver) }}" >> $GITHUB_OUTPUT
       - uses: actions/checkout@v4
       - name: Check for existing tag
         id: check-tag
@@ -47,9 +49,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
-      - name: Build
-        run: |
-          docker build https://github.com/physics-enthusiast/qemu.git#win9p-rebase --file ./tests/docker/dockerfiles/fedora-win64-cross.docker --tag=cross-compile:latest
+      - run: |
+          docker build https://github.com/${{ env.qemu_repo }}.git#${{ env.branch }} --file ./tests/docker/dockerfiles/fedora-win64-cross.docker --tag=cross-compile:latest
       - uses: addnab/docker-run-action@v3
         with:
           image: cross-compile:latest
@@ -57,9 +58,9 @@ jobs:
           run: |
             git config --global http.version HTTP/1.1
             git config --global http.postBuffer 157286400
-            git clone https://github.com/physics-enthusiast/qemu.git
+            git clone https://github.com/${{ env.qemu_repo }}.git
             cd qemu
-            git checkout win9p-rebase
+            git checkout ${{ env.branch }}
             mkdir build
             cd build
             ../configure --enable-sdl --enable-gtk --disable-werror --disable-docs --disable-plugins --disable-user --enable-fdt=internal --target-list="x86_64-softmmu i386-softmmu aarch64-softmmu arm-softmmu riscv64-softmmu riscv32-softmmu" $QEMU_CONFIGURE_OPTS $EXTRA_CONFIGURE_OPTS
