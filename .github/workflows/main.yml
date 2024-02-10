@@ -1,5 +1,8 @@
 name: Build QEMU Windows Installer
 
+concurrency: 
+  group: ${{ ( github.event_name == 'push' && 'test' ) || 'release' }}
+  cancel-in-progress: true
 on:
   workflow_dispatch:
   push:
