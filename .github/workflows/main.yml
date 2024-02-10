@@ -77,7 +77,6 @@ jobs:
         run: |
           gh release upload ${{ needs.release.outputs.tag_name }} qemu-setup.exe --repo ${{ github.repository }}
       - name: Set as latest
-        if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
-          gh release edit ${{ needs.release.outputs.tag_name }} --draft=false --prerelease=false --latest=true --repo ${{ github.repository }}
+          gh release edit ${{ needs.release.outputs.tag_name }} --draft=false --prerelease=false --latest=${{ github.event_name == 'workflow_dispatch' }} --repo ${{ github.repository }}
           
