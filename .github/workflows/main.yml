@@ -49,12 +49,15 @@ jobs:
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
-      - run: |
+      - name: Build Dockerfile
+        run: |
           docker build https://github.com/${{ env.qemu_repo }}.git#${{ env.branch }} --file ./tests/docker/dockerfiles/fedora-win64-cross.docker --tag=cross-compile:latest
-      - uses: addnab/docker-run-action@v3
+      - name: Compile QEMU
+        uses: addnab/docker-run-action@v3
         with:
           image: cross-compile:latest
           shell: bash
+          options: -v ${{ github.workspace }}:/var/qemu
           run: |
             git config --global http.version HTTP/1.1
             git config --global http.postBuffer 157286400
@@ -66,5 +69,12 @@ jobs:
             ../configure --enable-sdl --enable-gtk --disable-werror --disable-docs --disable-plugins --disable-user --enable-fdt=internal --target-list="x86_64-softmmu i386-softmmu aarch64-softmmu arm-softmmu riscv64-softmmu riscv32-softmmu" $QEMU_CONFIGURE_OPTS $EXTRA_CONFIGURE_OPTS
             make -j$(expr $(nproc) + 1)
             make -j$(expr $(nproc) + 1) installer
-            ls
+            mv qemu-setup-${{ needs.release.outputs.version }}.exe /var/qemu/qemu-setup.exe
+      - name: Upload Installer
+        run: |
+          gh release upload ${{ needs.release.outputs.tag_name }} qemu-setup.exe --repo ${{ github.repository }}
+      - name: Set as latest
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          gh release edit ${{ needs.release.outputs.tag_name }} --draft=false --prerelease=false --latest=true --repo ${{ github.repository }}
           
