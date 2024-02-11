@@ -47,6 +47,7 @@ sudo pacman -Syu
 
 test -e /etc/mtab || sudo ln -s ../proc/self/mounts /etc/mtab
 
+sudo pacman -S --noconfirm mingw-w64-$ARCH-mono
 sudo pacman -S --noconfirm mingw-w64-$ARCH-SDL2 mingw-w64-$ARCH-SDL2_image mingw-w64-$ARCH-asciidoc mingw-w64-$ARCH-cairo mingw-w64-$ARCH-capstone mingw-w64-$ARCH-curl-winssl mingw-w64-$ARCH-cyrus-sasl mingw-w64-$ARCH-gnutls mingw-w64-$ARCH-gtk3 mingw-w64-$ARCH-headers-git mingw-w64-$ARCH-icu mingw-w64-$ARCH-jack2 mingw-w64-$ARCH-leptonica mingw-w64-$ARCH-libarchive mingw-w64-$ARCH-libb2 mingw-w64-$ARCH-libnfs mingw-w64-$ARCH-libslirp mingw-w64-$ARCH-libssh mingw-w64-$ARCH-lz4 mingw-w64-$ARCH-pango mingw-w64-$ARCH-pdcurses mingw-w64-$ARCH-snappy mingw-w64-$ARCH-spice mingw-w64-$ARCH-usbredir mingw-w64-$ARCH-virglrenderer
 
 sudo mkdir -p /usr/local/$ARCH-w64-mingw32/lib
