@@ -10,7 +10,7 @@ on:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   qemu_repo: physics-enthusiast/qemu
-  branch: testing
+  branch: win9p-rebase
 
 jobs:
   release:
@@ -52,27 +52,17 @@ jobs:
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
-      - name: Build Dockerfile
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Get pacman package manager
         run: |
-          docker build https://github.com/${{ env.qemu_repo }}.git#${{ env.branch }} --file ./tests/docker/dockerfiles/fedora-win64-cross.docker --tag=cross-compile:latest
-      - name: Compile QEMU
-        uses: addnab/docker-run-action@v3
-        with:
-          image: cross-compile:latest
-          shell: bash
-          options: -v ${{ github.workspace }}:/var/qemu
-          run: |
-            git config --global http.version HTTP/1.1
-            git config --global http.postBuffer 157286400
-            git clone https://github.com/${{ env.qemu_repo }}.git
-            cd qemu
-            git checkout ${{ env.branch }}
-            mkdir build
-            cd build
-            ../configure --disable-docs --disable-plugins --disable-user --enable-sdl --enable-gtk --enable-slirp --enable-fdt=internal --target-list="x86_64-softmmu i386-softmmu aarch64-softmmu arm-softmmu riscv64-softmmu riscv32-softmmu" $QEMU_CONFIGURE_OPTS $EXTRA_CONFIGURE_OPTS
-            make -j$(expr $(nproc) + 1)
-            make -j$(expr $(nproc) + 1) installer
-            mv qemu-setup-${{ needs.release.outputs.version }}.exe /var/qemu/qemu-setup.exe
+          pacman.sh x86_64
+      - name: Build QEMU
+        run: |
+          git clone https://github.com/${{ env.qemu_repo }}.git
+          cd qemu
+          git checkout ${{ env.branch }}
+          ../build.sh x86_64
       - name: Upload Installer
         run: |
           gh release upload ${{ needs.release.outputs.tag_name }} qemu-setup.exe --repo ${{ github.repository }}
