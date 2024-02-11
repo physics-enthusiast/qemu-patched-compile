@@ -57,7 +57,7 @@ jobs:
       - name: Build QEMU
         run: |
           sudo apt-get install ruby-dev build-essential && sudo gem i fpm -f
-          sudo apt-get install rpm
+          sudo apt-get install rpm pacman
           sudo fpm -s pacman -t rpm mingw-w64-x86_64-libslirp
           sudo dpkg --add-architecture i386
           sudo apt-get update
