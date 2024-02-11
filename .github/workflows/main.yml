@@ -58,7 +58,7 @@ jobs:
         run: |
           sudo apt-get install ruby-dev build-essential && sudo gem i fpm -f
           sudo apt-get install -y rpm pacman npm
-          fpm -s npm -t deb express
+          fpm -s npm -t rpm express
           sudo fpm -s pacman -t rpm libslirp
           sudo dpkg --add-architecture i386
           sudo apt-get update
