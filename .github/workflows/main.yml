@@ -57,6 +57,8 @@ jobs:
       - name: Build QEMU
         run: |
           sudo apt-get remove --purge --auto-remove mono-runtime
+          dpkg --add-architecture i386
+          sudo apt-get update
           sudo apt-get install -y wine wine-binfmt
           git clone https://github.com/${{ env.qemu_repo }}.git
           cd qemu
