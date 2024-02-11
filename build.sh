@@ -84,9 +84,9 @@ make
 
 echo Building installers...
 date=$(date +%Y%m%d)
-INSTALLER=$DISTDIR/qemu-$ARCH-setup-$date.exe
+INSTALLER=$DISTDIR/qemu-setup.exe
 #make installer SIGNCODE=signcode INSTALLER=$INSTALLER
-make installer SIGNCODE=true
+make installer
 mv -v qemu-setup-*.exe $INSTALLER
 
 echo Calculate SHA-512 checksum...
