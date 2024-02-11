@@ -4,7 +4,7 @@ concurrency:
   group: ${{ ( github.event_name == 'push' && 'test' ) || 'release' }}
   cancel-in-progress: true
 on:
-  workflow_dispatch:tar failed (exit code 2)
+  workflow_dispatch:
   push:
 
 env:
@@ -24,7 +24,7 @@ jobs:
       - name: Get version
         id: get-version
         run: |
-          echo "ver=$(curl https://raw.githubusercontetar failed (exit code 2)nt.com/${{ env.qemu_repo }}/${{ env.branch }}/VERSION)" >> $GITHUB_OUTPUT
+          echo "ver=$(curl https://raw.githubusercontent.com/${{ env.qemu_repo }}/${{ env.branch }}/VERSION)" >> $GITHUB_OUTPUT
       - name: Generate environmental variables
         id: generate_env_vars
         run: |
