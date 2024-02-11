@@ -58,7 +58,7 @@ jobs:
         run: |
           sudo apt-get install ruby-dev build-essential && sudo gem i fpm -f
           sudo apt-get install -y rpm pacman
-          fpm -s pacman -t rpm --pacman-compression zst libslirp
+          fpm -s pacman -t rpm --pacman-compression zstd libslirp
           sudo dpkg --add-architecture i386
           sudo apt-get update
           sudo apt-get install -y wine wine-binfmt
