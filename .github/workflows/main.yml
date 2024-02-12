@@ -62,8 +62,9 @@ jobs:
           shell: bash
           options: -v ${{ github.workspace }}:/var/qemu
           run: |
+            sudo dnf install -y wget
             wget "https://github.com/physics-enthusiast/mingw-libslirp/releases/download/mingw-libslirp-4.7.0/mingw64-libslirp-4.7.0-1$(/usr/lib/rpm/redhat/dist.sh --dist).noarch.rpm"
-            dnf install "mingw64-libslirp-4.7.0-1$(/usr/lib/rpm/redhat/dist.sh --dist).noarch.rpm"
+            sudo dnf install -y "mingw64-libslirp-4.7.0-1$(/usr/lib/rpm/redhat/dist.sh --dist).noarch.rpm"
             git config --global http.version HTTP/1.1
             git config --global http.postBuffer 157286400
             git clone https://github.com/${{ env.qemu_repo }}.git
